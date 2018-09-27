@@ -21,7 +21,8 @@ public class Main {
 
 	public static void main(String[] args) {
 //		exercise1();
-		exercise2();
+//		exercise2();
+		exercise3();
 	}
 
 	/**
@@ -56,6 +57,33 @@ public class Main {
 		
 		System.out.println("\n=========== After ==========");
 		devs.forEach(devDetail);
+	}
+	
+	/**
+	 * List out highest, lowest, average experience of devs
+	 */
+	public static void exercise3() {
+		List<Dev> devs = createData();
+		System.out.println("=========== Before ==========");
+		devs.forEach(devDetail);
+		
+		// highest
+		int highestExp = devs.stream().filter(dev -> true).sorted((dev1, dev2) -> {
+			return dev2.getExp() - dev1.getExp();
+		}).limit(1).collect(Collectors.toList()).get(0).getExp();
+		
+		// lowest
+		int lowestExp = devs.stream().filter(dev -> true).sorted((dev1, dev2) -> {
+			return dev1.getExp() - dev2.getExp();
+		}).limit(1).collect(Collectors.toList()).get(0).getExp();
+		
+		// average
+		double averageExp = devs.stream().filter(dev -> true).mapToInt(dev -> dev.getExp()).average().getAsDouble();
+		
+		System.out.println("\n=========== After ==========");
+		System.out.println("Highest experience: " + highestExp);
+		System.out.println("Lowest experience: " + lowestExp);
+		System.out.printf("Average experience: %.2f", averageExp);
 	}
 
 	private static List<Dev> createData() {
