@@ -20,7 +20,8 @@ public class Main {
 	private static Consumer<Dev> devDetail = dev -> System.out.println("Name:" + dev.getName() + " - Skill: " + dev.getSkill() + " - exp: " + dev.getExp());
 
 	public static void main(String[] args) {
-		exercise1();
+//		exercise1();
+		exercise2();
 	}
 
 	/**
@@ -28,17 +29,38 @@ public class Main {
 	 */
 	public static void exercise1() {
 		List<Dev> devs = createData();
+		System.out.println("=========== Before ==========");
+		devs.forEach(devDetail);
+		
 		devs = devs.stream().filter(dev -> {
-			return dev.getSkill().equals(JAVA);
-		}).filter(dev -> {
-			return dev.getExp() >= 3;
+			return dev.getSkill().equals(JAVA) && dev.getExp() >= 3;
 		}).collect(Collectors.toList());
+		
+		System.out.println("\n=========== After ==========");
+		devs.forEach(devDetail);
+	}
+	
+	/**
+	 * Get top 5-10 devs who has Java Skill and exp >= 3 order by exp asc
+	 */
+	public static void exercise2() {
+		List<Dev> devs = createData();
+		System.out.println("=========== Before ==========");
+		devs.forEach(devDetail);
+		
+		devs = devs.stream().filter(dev -> {
+			return dev.getSkill().equals(JAVA) && dev.getExp() >= 3;
+		}).sorted((dev1, dev2) -> {
+			return dev1.getExp() - dev2.getExp();
+		}).skip(5).limit(5).collect(Collectors.toList());
+		
+		System.out.println("\n=========== After ==========");
 		devs.forEach(devDetail);
 	}
 
 	private static List<Dev> createData() {
 		List<Dev> data = new ArrayList<>();
-		for (int i = 1; i <= 9; i++) {
+		for (int i = 1; i < 30; i++) {
 			Dev dev = new Dev(i, "Dev " + i, i % 2 == 0 ? JAVA : DOT_NET, randomFunction.apply(9));
 			data.add(dev);
 		}
