@@ -1,7 +1,10 @@
 package com.nhnhan;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 import java.util.Random;
 import java.util.function.BiFunction;
 import java.util.function.Consumer;
@@ -23,7 +26,8 @@ public class Main {
 //		exercise1();
 //		exercise2();
 //		exercise3();
-		exercise4();
+//		exercise4();
+		exercise5();
 	}
 
 	/**
@@ -96,18 +100,49 @@ public class Main {
 		devs.forEach(devDetail);
 		
 		// All devs have exp
-		List<Dev> haveExp = devs.stream().filter(dev -> dev.getExp() > 0).collect(Collectors.toList());
+		boolean hasExp = devs.stream().parallel().allMatch(dev -> dev.getExp() >= 0);
 		
 		// All devs have exp >= 5
-		List<Dev> expGE5 = devs.stream().filter(dev -> dev.getExp() >= 5).collect(Collectors.toList());
+		boolean expGE5 = devs.stream().parallel().anyMatch(dev -> dev.getExp() >= 5);
 		
 		// All devs have none exp
-		List<Dev> noneExp = devs.stream().filter(dev -> dev.getExp() == 0).collect(Collectors.toList());
+		boolean noneExp = devs.stream().parallel().noneMatch(dev -> dev.getExp() != 0);
 		
 		System.out.println("\n=========== After ==========");
-		System.out.println("All devs have exp: "); haveExp.forEach(devDetail);
-		System.out.println("\nAll devs have exp >= 5: "); expGE5.forEach(devDetail);
-		System.out.println("\nAll devs have none exp: "); noneExp.forEach(devDetail);
+		System.out.println("All devs have exp: " + hasExp);
+		System.out.println("All devs have exp >= 5: " + expGE5);
+		System.out.println("All devs have none exp: " + noneExp);
+	}
+	
+	public static void exercise5() {
+		List<Dev> devs = createData();
+		System.out.println("=========== Before ==========");
+		devs.forEach(devDetail);
+		
+		System.out.println("\n=========== After ==========");
+		// list out numbers of dev per skill
+		Map<String, Long> numbersPerSkill = devs.stream().collect(Collectors.groupingBy(Dev::getSkill, Collectors.counting()));
+        numbersPerSkill.forEach((key,value) -> System.out.println("Skill: " + key + " total:" + value));
+        
+		// list out average experience per skill
+        Map<String, Double> averageExp = devs.stream().collect(Collectors.groupingBy(Dev::getSkill, Collectors.averagingDouble(Dev::getExp)));
+        averageExp.forEach((key,value) -> System.out.println("Skill: " + key + " average exp:" + value));
+        
+		// list out experience number and numbers dev
+        Map<Integer, Long> statisticExp = devs.stream().collect(Collectors.groupingBy(Dev::getExp, Collectors.counting()));
+        statisticExp.forEach((key,value) -> System.out.println("Exp: " + key + " total:" + value));
+        
+		// list out numbers dev per skill
+        Map<String, Long> statisticExpAndSkill = devs.stream().collect(Collectors.groupingBy(dev -> dev.getSkill() + " with " + dev.getExp() + " exp", Collectors.counting()));
+        statisticExpAndSkill.forEach((key,value) -> System.out.println("Dev " + key + " total:" + value));
+        
+		// list out highest exp dev per skill
+        Map<String, Optional<Dev>> statisticSkillAndMaxExp = devs.stream().collect(Collectors.groupingBy(dev -> dev.getSkill(), Collectors.maxBy(Comparator.comparing(Dev::getExp))));
+        statisticSkillAndMaxExp.forEach((key,value) -> System.out.println(key + ": " + value.get().getName() + " with " + value.get().getExp() + " exp"));
+        
+		// list out numbers of Senior, Junior. Senior must be > 5 exp
+        Map<Boolean, Long> statisticPartion = devs.stream().collect(Collectors.partitioningBy(dev -> dev.getExp() > 5, Collectors.counting()));
+        statisticPartion.forEach((key,value) -> System.out.println((key? "Senior: ":"Junior: ") + value));
 	}
 
 	private static List<Dev> createData() {
