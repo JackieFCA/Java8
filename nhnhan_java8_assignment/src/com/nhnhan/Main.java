@@ -22,7 +22,8 @@ public class Main {
 	public static void main(String[] args) {
 //		exercise1();
 //		exercise2();
-		exercise3();
+//		exercise3();
+		exercise4();
 	}
 
 	/**
@@ -85,10 +86,33 @@ public class Main {
 		System.out.println("Lowest experience: " + lowestExp);
 		System.out.printf("Average experience: %.2f", averageExp);
 	}
+	
+	/**
+	 * List out all devs have exp, exp >= 5 or none exp
+	 */
+	public static void exercise4() {
+		List<Dev> devs = createData();
+		System.out.println("=========== Before ==========");
+		devs.forEach(devDetail);
+		
+		// All devs have exp
+		List<Dev> haveExp = devs.stream().filter(dev -> dev.getExp() > 0).collect(Collectors.toList());
+		
+		// All devs have exp >= 5
+		List<Dev> expGE5 = devs.stream().filter(dev -> dev.getExp() >= 5).collect(Collectors.toList());
+		
+		// All devs have none exp
+		List<Dev> noneExp = devs.stream().filter(dev -> dev.getExp() == 0).collect(Collectors.toList());
+		
+		System.out.println("\n=========== After ==========");
+		System.out.println("All devs have exp: "); haveExp.forEach(devDetail);
+		System.out.println("\nAll devs have exp >= 5: "); expGE5.forEach(devDetail);
+		System.out.println("\nAll devs have none exp: "); noneExp.forEach(devDetail);
+	}
 
 	private static List<Dev> createData() {
 		List<Dev> data = new ArrayList<>();
-		for (int i = 1; i < 30; i++) {
+		for (int i = 1; i < 10; i++) {
 			Dev dev = new Dev(i, "Dev " + i, i % 2 == 0 ? JAVA : DOT_NET, randomFunction.apply(9));
 			data.add(dev);
 		}
