@@ -9,6 +9,7 @@ import java.util.Random;
 import java.util.function.BiFunction;
 import java.util.function.Consumer;
 import java.util.function.Function;
+import java.util.function.Predicate;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
@@ -21,13 +22,18 @@ public class Main {
 	private static BiFunction<Integer, Integer, Integer> randomBiFunction = (min, max) -> new Random().nextInt((max + 1) - min);
 	
 	private static Consumer<Dev> devDetail = dev -> System.out.println("Name:" + dev.getName() + " - Skill: " + dev.getSkill() + " - exp: " + dev.getExp());
+	private static Consumer<Dev2> devDetail2 = dev -> System.out.println("Name:" + dev.getName() + " Skill: "
+			+ dev.getSkillList().get(0).getSkill() + " exp: " + dev.getSkillList().get(0).getExp() + " Skill: "
+			+ dev.getSkillList().get(1).getSkill() + " exp: " + dev.getSkillList().get(1).getExp());
 
 	public static void main(String[] args) {
 //		exercise1();
 //		exercise2();
 //		exercise3();
 //		exercise4();
-		exercise5();
+//		exercise5();
+		
+		exercise1_1();
 	}
 
 	/**
@@ -38,9 +44,7 @@ public class Main {
 		System.out.println("=========== Before ==========");
 		devs.forEach(devDetail);
 		
-		devs = devs.stream().filter(dev -> {
-			return dev.getSkill().equals(JAVA) && dev.getExp() >= 3;
-		}).collect(Collectors.toList());
+		devs = devs.stream().filter(dev -> dev.getSkill().equals(JAVA) && dev.getExp() >= 3).collect(Collectors.toList());
 		
 		System.out.println("\n=========== After ==========");
 		devs.forEach(devDetail);
@@ -144,6 +148,25 @@ public class Main {
         Map<Boolean, Long> statisticPartion = devs.stream().collect(Collectors.partitioningBy(dev -> dev.getExp() > 5, Collectors.counting()));
         statisticPartion.forEach((key,value) -> System.out.println((key? "Senior: ":"Junior: ") + value));
 	}
+	
+	public static void exercise1_1() {
+		List<Dev2> devs = createData2();
+		System.out.println("=========== Before ==========");
+		devs.forEach(devDetail2);
+		
+		Predicate<Skill> javaSkill = skill -> skill.getSkill().equals(JAVA);
+		Predicate<Skill> expGE3 = skill -> skill.getExp() >= 3;
+		Predicate<Skill> javaExp3 = skill -> javaSkill.test(skill) && expGE3.test(skill);
+		
+		List<Dev2> result2 = devs.stream().filter(dev -> {
+			List<Skill> skills = dev.getSkillList();
+			skills = skills.stream().filter(javaExp3).collect(Collectors.toList());
+			return !skills.isEmpty();
+		}).collect(Collectors.toList());
+		
+		System.out.println("\n=========== After ==========");
+		result2.forEach(devDetail2);
+	}
 
 	private static List<Dev> createData() {
 		List<Dev> data = new ArrayList<>();
@@ -154,7 +177,7 @@ public class Main {
 		return data;
 	}
 
-	private static List<Dev2> data2() {
+	private static List<Dev2> createData2() {
 		List<Dev2> data = new ArrayList<Dev2>();
 		for (int i = 1; i <= 9; i++) {
 			Dev2 dev = new Dev2(i, "Dev" + i);
