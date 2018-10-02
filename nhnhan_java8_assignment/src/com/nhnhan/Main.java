@@ -1,6 +1,7 @@
 package com.nhnhan;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
@@ -33,7 +34,8 @@ public class Main {
 //		exercise4();
 //		exercise5();
 		
-		exercise1_1();
+//		exercise1_1();
+		exercise2_1();
 	}
 
 	/**
@@ -58,11 +60,9 @@ public class Main {
 		System.out.println("=========== Before ==========");
 		devs.forEach(devDetail);
 		
-		devs = devs.stream().filter(dev -> {
-			return dev.getSkill().equals(JAVA) && dev.getExp() >= 3;
-		}).sorted((dev1, dev2) -> {
-			return dev1.getExp() - dev2.getExp();
-		}).skip(5).limit(5).collect(Collectors.toList());
+		devs = devs.stream().filter(dev -> dev.getSkill().equals(JAVA) && dev.getExp() >= 3)
+				.sorted((dev1, dev2) -> dev1.getExp() - dev2.getExp())
+				.skip(5).limit(5).collect(Collectors.toList());
 		
 		System.out.println("\n=========== After ==========");
 		devs.forEach(devDetail);
@@ -158,19 +158,41 @@ public class Main {
 		Predicate<Skill> expGE3 = skill -> skill.getExp() >= 3;
 		Predicate<Skill> javaExp3 = skill -> javaSkill.test(skill) && expGE3.test(skill);
 		
-		List<Dev2> result2 = devs.stream().filter(dev -> {
+		List<Dev2> result = devs.stream().filter(dev -> {
 			List<Skill> skills = dev.getSkillList();
 			skills = skills.stream().filter(javaExp3).collect(Collectors.toList());
 			return !skills.isEmpty();
 		}).collect(Collectors.toList());
 		
 		System.out.println("\n=========== After ==========");
-		result2.forEach(devDetail2);
+		result.forEach(devDetail2);
 	}
+	
+	public static void exercise2_1() {
+		List<Dev2> devs = createData2();
+		System.out.println("=========== Before ==========");
+		devs.forEach(devDetail2);
+		
+		// get top 5 devs who has Java Skill and exp >= 3 order by exp desc
+		Predicate<Skill> javaSkill = skill -> skill.getSkill().equals(JAVA);
+		Predicate<Skill> expGE3 = skill -> skill.getExp() >= 3;
+		Predicate<Skill> javaExp3 = skill -> javaSkill.test(skill) && expGE3.test(skill);
+		
+		List<Dev2> result = devs.stream().filter(dev -> {
+			List<Skill> skills = dev.getSkillList();
+			skills = skills.stream().filter(javaExp3).collect(Collectors.toList());
+			return !skills.isEmpty();
+		}).collect(Collectors.toList());
 
+		Collections.sort(result, (dev1, dev2) -> dev2.getSkillList().get(0).getExp() - dev1.getSkillList().get(0).getExp());
+		
+		System.out.println("\n=========== After ==========");
+		result.stream().limit(5).forEach(devDetail2);
+	}
+	
 	private static List<Dev> createData() {
 		List<Dev> data = new ArrayList<>();
-		for (int i = 1; i < 10; i++) {
+		for (int i = 1; i < 40; i++) {
 			Dev dev = new Dev(i, "Dev " + i, i % 2 == 0 ? JAVA : DOT_NET, randomFunction.apply(9));
 			data.add(dev);
 		}
