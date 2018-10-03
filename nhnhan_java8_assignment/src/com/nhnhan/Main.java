@@ -3,6 +3,7 @@ package com.nhnhan;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.IntSummaryStatistics;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -35,7 +36,8 @@ public class Main {
 //		exercise5();
 		
 //		exercise1_1();
-		exercise2_1();
+//		exercise2_1();
+		exercise3_1();
 	}
 
 	/**
@@ -62,7 +64,7 @@ public class Main {
 		
 		devs = devs.stream().filter(dev -> dev.getSkill().equals(JAVA) && dev.getExp() >= 3)
 				.sorted((dev1, dev2) -> dev1.getExp() - dev2.getExp())
-				.skip(5).limit(5).collect(Collectors.toList());
+				.skip(4).limit(6).collect(Collectors.toList());
 		
 		System.out.println("\n=========== After ==========");
 		devs.forEach(devDetail);
@@ -184,10 +186,35 @@ public class Main {
 			return !skills.isEmpty();
 		}).collect(Collectors.toList());
 
-		Collections.sort(result, (dev1, dev2) -> dev2.getSkillList().get(0).getExp() - dev1.getSkillList().get(0).getExp());
+		Collections.sort(result, (dev1, dev2) -> {
+			int javaExpDev1 = dev1.getSkillList().stream().filter(javaSkill).findFirst().map(skill -> skill.getExp()).get();
+			int javaExpDev2 = dev2.getSkillList().stream().filter(javaSkill).findFirst().map(skill -> skill.getExp()).get();
+			return javaExpDev2 - javaExpDev1;
+		});
 		
 		System.out.println("\n=========== After ==========");
 		result.stream().limit(5).forEach(devDetail2);
+	}
+	
+	public static void exercise3_1() {
+		List<Dev2> devs = createData2();
+		System.out.println("=========== Before ==========");
+		devs.forEach(devDetail2);
+		
+		// list out highest, lowest, average experience of devs
+		IntSummaryStatistics summary = devs.stream().filter(dev -> true)
+				.map(dev -> dev.getSkillList().stream().max((java, net) -> java.getExp() - net.getExp()).get())
+				.mapToInt(skill -> skill.getExp())
+				.summaryStatistics();
+		
+		int highestExp = summary.getMax();
+		int lowestExp = summary.getMin();
+		double averageExp = summary.getAverage();
+		
+		System.out.println("\n=========== After ==========");
+		System.out.println("Highest exp in devs : " + highestExp);
+        System.out.println("Lowest exp in devs : " + lowestExp);
+        System.out.println("Average exp of all devs : " + averageExp);
 	}
 	
 	private static List<Dev> createData() {
