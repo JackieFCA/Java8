@@ -37,7 +37,8 @@ public class Main {
 		
 //		exercise1_1();
 //		exercise2_1();
-		exercise3_1();
+//		exercise3_1();
+		exercise4_1();
 	}
 
 	/**
@@ -215,6 +216,35 @@ public class Main {
 		System.out.println("Highest exp in devs : " + highestExp);
         System.out.println("Lowest exp in devs : " + lowestExp);
         System.out.println("Average exp of all devs : " + averageExp);
+	}
+	
+	public static void exercise4_1() {
+		List<Dev2> devs = createData2();
+		System.out.println("=========== Before ==========");
+		devs.forEach(devDetail2);
+		
+		// All devs have exp
+		boolean hasExp = devs.stream().parallel().anyMatch(
+					dev -> dev.getSkillList().stream().parallel()
+					.anyMatch(skill -> skill.getExp() > 0)
+				);
+		
+		// All devs have exp >= 5
+		boolean expGE5 = devs.stream().parallel().anyMatch(
+					dev -> dev.getSkillList().stream().parallel()
+					.anyMatch(skill -> skill.getExp() >= 5)
+				);
+		
+		// All devs have none exp
+		boolean noneExp = devs.stream().parallel().allMatch(
+					dev -> dev.getSkillList().stream().parallel()
+					.allMatch(skill -> skill.getExp() == 0)
+				);
+		
+		System.out.println("\n=========== After ==========");
+		System.out.println("All devs have exp: " + hasExp);
+		System.out.println("All devs have exp >= 5: " + expGE5);
+		System.out.println("All devs have none exp: " + noneExp);
 	}
 	
 	private static List<Dev> createData() {
