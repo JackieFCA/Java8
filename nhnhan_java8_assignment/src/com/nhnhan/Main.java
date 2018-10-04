@@ -38,7 +38,8 @@ public class Main {
 //		exercise1_1();
 //		exercise2_1();
 //		exercise3_1();
-		exercise4_1();
+//		exercise4_1();
+		exercise5_1();
 	}
 
 	/**
@@ -245,6 +246,47 @@ public class Main {
 		System.out.println("All devs have exp: " + hasExp);
 		System.out.println("All devs have exp >= 5: " + expGE5);
 		System.out.println("All devs have none exp: " + noneExp);
+	}
+	
+	public static void exercise5_1() {
+		List<Dev2> devs = createData2();
+		System.out.println("=========== Before ==========");
+		devs.forEach(devDetail2);
+		
+		List<Skill> allDevSkill = new ArrayList<>();
+		Consumer<Dev2> addSkill = dev -> allDevSkill.addAll(dev.getSkillList());
+		devs.forEach(addSkill);
+		
+		// list out numbers of dev per skill
+		System.out.println("\n=========== After ==========");
+		System.out.println("Numbers of dev per skill:");
+        Map<String, Long> numbersPerSkill = allDevSkill.stream().filter(skill->skill.getExp()>0).collect(Collectors.groupingBy(Skill::getSkill, Collectors.counting()));
+        numbersPerSkill.forEach((key,value) -> System.out.println("Skill: " + key + " has " + value + " dev."));
+
+        // list out average experience per skill
+        System.out.println("\nAverage experience per skill:");
+        Map<String, Double> averageExp = allDevSkill.stream().filter(skill->skill.getExp()>0).collect(Collectors.groupingBy(Skill::getSkill, Collectors.averagingDouble(Skill::getExp)));
+        averageExp.forEach((key,value) -> System.out.println("Skill: " + key + " average exp:" + value));
+
+        // list out experience number and numbers dev
+        System.out.println("\nExperience number and numbers dev:");
+        Map<String, Long> statisticExp = allDevSkill.stream().filter(skill->skill.getExp()>0).collect(Collectors.groupingBy(skill -> skill.getSkill() + " with " + skill.getExp() + " exp", Collectors.counting()));
+        statisticExp.forEach((key,value) -> System.out.println("Dev " + key + " total:" + value));
+
+        // list out numbers dev per skill
+        System.out.println("\nNumbers dev per skill: ");
+        Map<String, Long> statisticExpAndSkill = allDevSkill.stream().filter(skill->skill.getExp()>0).collect(Collectors.groupingBy(skill -> skill.getSkill() + " with " + skill.getExp() + " exp", Collectors.counting()));
+        statisticExpAndSkill.forEach((key,value) -> System.out.println("Dev " + key + " total:" + value));
+
+        // list out highest exp dev per skill
+        System.out.println("\nHighest exp dev per skill: ");
+        Map<String, Optional<Skill>> statisticSkillAndMaxExp = allDevSkill.stream().filter(skill->skill.getExp()>0).collect(Collectors.groupingBy(skill -> skill.getSkill(), Collectors.maxBy(Comparator.comparing(Skill::getExp))));
+        statisticSkillAndMaxExp.forEach((key,value) -> System.out.println(key + ": " + value.get().getSkill() + " with " + value.get().getExp() + " exp"));
+
+        // list out numbers of Senior, Junior. Senior must be exp > 5
+        System.out.println("\nNumbers of Senior, Junior. Senior must be > 5 exp:");
+        Map<Boolean, Long> statisticPartion = allDevSkill.stream().filter(skill->skill.getExp()>0).collect(Collectors.partitioningBy(skill -> skill.getExp() > 5, Collectors.counting()));
+        statisticPartion.forEach((key,value) -> System.out.println((key? "Senior: ":"Junior: ") + value));
 	}
 	
 	private static List<Dev> createData() {
